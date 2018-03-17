@@ -42,7 +42,7 @@
 /**
  * Tempalte for the benchmark maintenance tasks.
  */
-function template_maintain_benchmark()
+function template_maintain_extimgproxy()
 {
 	global $context, $txt, $scripturl;
 

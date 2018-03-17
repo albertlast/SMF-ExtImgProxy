@@ -42,17 +42,13 @@
 
 global $txt;
 
-// ManageMaintenance.english.php
-$txt['benchmark_usercreate'] = 'Creating User';
-$txt['benchmark_post'] = 'Creating Posts';
-$txt['benchmark_usercreate_info'] = 'Create as many users as possible in one minute <br/> This test is cpu heavy';
-$txt['benchmark_post_info'] = 'Create as many posts as possible in one minute <br/> This test is db insert performance heavy'; 
-$txt['benchmark_topic'] = 'Benchmark methods';
-$txt['benchmark_postread'] = 'Reading Posts';
-$txt['benchmark_postread_info'] = 'Repeatedly access a topic for one minute. <br /> This test depends heavily on the size of your board and the active features.';
-$txt['benchmark_result'] = 'Result of Benchmark';
-
-// Admin.english.php
-$txt['maintain_sub_extimgproxy'] = 'Ext Image Proxy';
+$txt['maintain_sub_extimgproxy'] = 'External Image Proxy';
+$txt['eip_eexternal'] = 'Easy External';
+$txt['eip_internal'] = 'SMF Imageproxy';
+$txt['eip_mode'] = 'Mode';
+$txt['eip_url'] = 'Proxy URL';
+$txt['eip_exp'] = 'Example';
+$txt['eip_mode_help'] = 'You can only change the mode when the image proxy of smf ist enabled. 
+		Maintenance > Server Settings > General';
 
 ?>

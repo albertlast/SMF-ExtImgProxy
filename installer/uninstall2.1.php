@@ -49,7 +49,8 @@ elseif (!defined('SMF'))
 	die('<b>Error:</b> Cannot uninstall - please verify you put this in the same place as SMF\'s index.php.');
 
 remove_integration_function('integrate_pre_include', '$sourcedir/SMFExtImgProxy/Class-SMFExtImgProxy.php');
-remove_integration_function('integrate_manage_maintenance', 'SMFExtImgProxy::addManageMaintenancePanel');
+remove_integration_function('integrate_modify_modifications', 'SMFExtImgProxy::addManageMaintenancePanel');
 remove_integration_function('integrate_admin_areas', 'SMFExtImgProxy::addAdminPanel');
+remove_integration_function('integrate_proxy', 'SMFExtImgProxy::generatedProxyUrlHook');
 
 ?>

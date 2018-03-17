@@ -45,289 +45,137 @@ if (!defined('SMF'))
 
 class SMFExtImgProxy {
 
-	public static function addManageMaintenancePanel(&$subActions) {
+	public static function addManageMaintenancePanel(&$subActions)
+	{
 		global $context;
 		
 		loadTemplate('SMFExtImgProxy');
 
-		$context[$context['admin_menu_name']]['tab_data']['tabs']['smf_extimgproxy'] = array();
+		//$context[$context['admin_menu_name']]['tab_data']['tabs']['smf_extimgproxy'] = array();
 
-		$subActions['smf_extimgproxy'] = [
-			'function' => 'SMFExtImgProxy::MaintainBenchmark',
-			'template' => 'maintain_Benchmark',
-			'activities' => [
-				'usercreate' => 'SMFExtImgProxy::UserCreate',
-				'postcreate' => 'SMFExtImgProxy::PostCreate',
-				'postread' => 'SMFExtImgProxy::PostRead',
-			],
-		];
+		$subActions['smf_extimgproxy'] = 'SMFExtImgProxy::MaintainExtimgproxy';
 	}
 
-	public static function addAdminPanel(&$areas) {
+	public static function addAdminPanel(&$areas)
+	{
 		global $txt;
 		
 		loadLanguage('SMFExtImgProxy');
 
-		$areas['maintenance']['areas']['maintain']['subsections'] =	array_merge(
-			$areas['maintenance']['areas']['maintain']['subsections'] ,
+		$areas['config']['areas']['modsettings']['subsections'] =	array_merge(
+			$areas['config']['areas']['modsettings']['subsections'] ,
 			[
-				'smf_extimgproxy' => array($txt['maintain_sub_extimgproxy'], 'admin_forum')
+				'smf_extimgproxy' => array($txt['maintain_sub_extimgproxy'])
 			]
 		);
 	}
 
 	/**
-	 * Benchmark for User creation tries to create as many as possible in 1 minute
-	 * It requires the admin_forum permission.
-	 * It shows as the maintain_forum admin area.
-	 * It is accessed from ?action=admin;area=maintain;sa=smf_extimgproxy;activity=usercreate.
-	 * It also updates the optimize scheduled task such that the tables are not automatically optimized again too soon.
-	 *
-	 * @uses the benchmarkresult sub template
+	 *Dummy Function for MaintainExtimgproxy
 	 */
-	public static function UserCreate()
+	public static function MaintainExtimgproxy()
 	{
-		global $db_prefix, $txt, $context, $smcFunc, $sourcedir;
+		global $txt, $scripturl, $context, $config_vars, $image_proxy_enabled, $eip_url, $eip_mode, $sourcedir;
 
-		require_once($sourcedir . '/Subs-Members.php');
+		if (empty($eip_url))
+			$eip_url = '';
+		if (empty($eip_mode))
+			$eip_mode = 0;
 
-		$prefixUsername = 'UserCreateBench';
-		$count = 0;
-		$usersID = array();
-		$start = 0;
-		$maxRuntime = 60;
-		$cleanupTime = 40;
+		if (isset($_REQUEST['eip_url']))
+			$eip_url = $_REQUEST['eip_url'];
+		if (isset($_REQUEST['eip_mode']))
+			$eip_mode = (int) $_REQUEST['eip_mode'];
 
-		isAllowedTo('admin_forum');
+		$config_vars = array();
 
-		checkSession('request');
-
-		if (!isset($_SESSION['optimized_tables']))
-			validateToken('admin-maint');
-		else
-			validateToken('admin-optimize', 'post', false);
-
-		ignore_user_abort(true);
-
-		$context['page_title'] = $txt['benchmark_usercreate'];
-		$context['sub_template'] = 'benchmarkresult';
-		$context['continue_post_data'] = '';
-		$context['continue_countdown'] = 3;
-
-		// Try for extra time
-		@set_time_limit($cleanupTime + $maxRuntime);
-
-		$start = microtime(true);
-		$end = $start + $maxRuntime;
-
-		while (microtime(true) < $end)
-		{
-			$regOptions = array(
-				'interface' => 'admin',
-				'username' => $prefixUsername . $count,
-				'email' => $prefixUsername. '_' . $count . '@' . $_SERVER['SERVER_NAME'] . (strpos($_SERVER['SERVER_NAME'], '.') === FALSE ? '.com' : ''),
-				'password' => '',
-				'require' => 'nothing'
-			);
-
-			$usersID[] = registerMember($regOptions);
-			$count++;
-		}
-		
-		$context['benchmark_result']['amount'] = $count;
-		$context['benchmark_result']['test_name'] = $txt['benchmark_usercreate'];
-		deleteMembers($usersID);
-	}
-
-	/**
-	 *Dummy Function for MaintainBenchmark
-	 */
-	public static function MaintainBenchmark()
-	{}
-
-	/**
-	 * Benchmakr for Post creation tries to create as many as possible in 1 minute
-	 * It requires the admin_forum permission.
-	 * It shows as the maintain_forum admin area.
-	 * It is accessed from ?action=admin;area=maintain;sa=benchmark;activity=postcreate.
-
-	 * @uses the benchmarkresult sub template
-	 */
-	public static function PostCreate()
-	{
-		global $txt, $context, $smcFunc, $sourcedir;
-		
-		require_once($sourcedir . '/Subs-Members.php');
-		require_once($sourcedir . '/Subs-Post.php');
-		require_once($sourcedir . '/RemoveTopic.php');
-		
-		$prefixUsername = 'UserCreateBench';
-		$count = 0;
-		$userID = 0;
-		$start = 0;
-		$maxRuntime = 60;
-		$cleanupTime = 40;
-		$username = $prefixUsername . '_' . $count;
-		$email = $username . '@' . $_SERVER['SERVER_NAME'] . (strpos($_SERVER['SERVER_NAME'], '.') === FALSE ? '.com' : '');
-		$postid = 0;
-		$boardid = 0;
-		
-		// find a board
-		$request = $smcFunc['db_query']('', '
-			SELECT id_board
-			FROM {db_prefix}boards
-			LIMIT 1',
-			array()
+		// Mode Select
+		$config_vars[] = array(
+			'type' => 'select',
+			'name' => 'eip_mode',
+			'data' => [
+				['0', $txt['eip_internal']], // smf default proxy
+				['1',$txt['eip_eexternal']],	 // easy external proxy proxy_url + img_url
+			],
+			'value' => $eip_mode,
+			'label' => $txt['eip_mode'],
+			'javascript' => '',
+			'help' => $txt['eip_mode_help'],
+			'disabled' => empty($image_proxy_enabled),
+			'invalid' => false,
+			'preinput' => '',
 		);
 
-		$row = $smcFunc['db_fetch_assoc']($request);
-		$boardid = $row['id_board'];
-
-		isAllowedTo('admin_forum');
-
-		checkSession('request');
-
-		if (!isset($_SESSION['optimized_tables']))
-			validateToken('admin-maint');
-		else
-			validateToken('admin-optimize', 'post', false);
-
-		ignore_user_abort(true);
-
-		$context['page_title'] = $txt['benchmark_usercreate'];
-		$context['sub_template'] = 'benchmarkresult';
-		$context['continue_post_data'] = '';
-		$context['continue_countdown'] = 3;
-		
-		$regOptions = [
-			'interface' => 'admin',
-			'username' => $prefixUsername . $count,
-			'email' => $email,
-			'password' => '',
-			'require' => 'nothing'
-		];
-
-		$userID = registerMember($regOptions);
-		
-		// Try for extra time
-		@set_time_limit($cleanupTime + $maxRuntime);
-		
-		//create the inital topic
-		$msgOptions = [
-			'subject' => 'Post Benchmark Topic',
-			'body' => 'nothing',
-			'approved' => TRUE
-		];
-
-		$topicOptions = [
-			'board' => $boardid,
-			'mark_as_read' => TRUE,
-		];
-
-		$posterOptions = [
-			'id' => $userID,
-			'name' => $username,
-			'email' => $email,
-			'update_post_count' => TRUE,
-		];
-
-		createPost($msgOptions, $topicOptions, $posterOptions);
-		
-		$postid = $topicOptions['id'];
-		
-		$start = microtime(true);
-		$end = $start + $maxRuntime;
-		
-		while (microtime(true) < $end)
-		{
-			createPost($msgOptions, $topicOptions, $posterOptions);
-			$count++;
-		}
-		
-		removeTopics($postid);
-		
-		$context['benchmark_result']['amount'] = $count;
-		$context['benchmark_result']['test_name'] = $txt['benchmark_post'];
-		
-		deleteMembers($userID);
-	}
-
-	/**
-	 * Benchmark for Post reads tries to access as many as possible in 1 minute
-	 * It requires the admin_forum permission.
-	 * It shows as the maintain_forum admin area.
-	 * It is accessed from ?action=admin;area=maintain;sa=benchmark;activity=postread.
-	 * It also updates the optimize scheduled task such that the tables are not automatically optimized again too soon.
-	 *
-	 * @uses the benchmarkresult sub template
-	 */
-	public static function PostRead()
-	{
-		global $txt, $context, $smcFunc, $sourcedir, $topic, $board;
-
-		require_once($sourcedir . '/Subs-Members.php');
-		require_once($sourcedir . '/Display.php');
-		require_once($sourcedir . '/Load.php');
-
-		$count = 0;
-		$usersID = array();
-		$start = 0;
-		$maxRuntime = 60;
-		$cleanupTime = 40;
-		$topicid = 0;
-		$boardid = 0;
-
-		// find a topic
-		$request = $smcFunc['db_query']('', '
-			SELECT id_topic, id_board
-			FROM {db_prefix}topics
-			LIMIT 1',
-			array()
+		// Proxy URL
+		$config_vars[] = array(
+			'type' => 'input',
+			'name' => 'eip_url',
+			'value' => $eip_url,
+			'label' => $txt['eip_url'],
+			'javascript' => '',
+			'help' => '',
+			'disabled' => empty($image_proxy_enabled) || empty($eip_mode),
+			'invalid' => false,
+			'preinput' => '',
+			'size' => 30,
 		);
 
-		$row = $smcFunc['db_fetch_assoc']($request);
-		$boardid = $row['id_board'];
-		$topicid = $row['id_topic'];
+		// Exp. Url
+		$config_vars[] = array(
+			'type' => 'text',
+			'name' => 'exp',
+			'value' => get_proxied_url('http://www.test.url/image/kitty.jpg'),
+			'label' => $txt['eip_exp'],
+			'javascript' => '',
+			'help' => '',
+			'disabled' => false,
+			'invalid' => false,
+			'preinput' => '',
+			'size' => 60,
+		);
 
-		isAllowedTo('admin_forum');
+		if (empty($context['settings_post_javascript']))
+			$context['settings_post_javascript'] = '';
+		$context['settings_post_javascript'] .= '$("#exp").prop("readonly", true);';
 
-		checkSession('request');
+		$context['post_url'] = $scripturl . '?action=admin;area=modsettings;save;sa=smf_extimgproxy';
+		$context['settings_title'] = $txt['maintain_sub_extimgproxy'];
 
-		if (!isset($_SESSION['optimized_tables']))
-			validateToken('admin-maint');
-		else
-			validateToken('admin-optimize', 'post', false);
+		$context['config_vars'] = $config_vars;
 
-		ignore_user_abort(true);
-
-		$context['page_title'] = $txt['benchmark_usercreate'];
-		$context['sub_template'] = 'benchmarkresult';
-		$context['continue_post_data'] = '';
-		$context['continue_countdown'] = 3;
-
-		// catch all output	
-		ob_start();
-
-		// Try for extra time
-		@set_time_limit($cleanupTime + $maxRuntime);
-
-		$start = microtime(true);
-		$end = $start + $maxRuntime;
-
-		while (microtime(true) < $end)
+		if (isset($_GET['save']))
 		{
-			$topic = $topicid;
-			$board = $boardid;
-			loadBoard();
-			Display();
-			$count++;
+			$new_settings = array();
+			$new_settings['eip_mode'] = (int) $eip_mode;
+			$new_settings['eip_url'] = '\'' . addcslashes($eip_url, '\'\\') . '\'';
+			// Save the relevant settings in the Settings.php file.
+			require_once($sourcedir . '/Subs-Admin.php');
+			updateSettingsFile($new_settings);
 		}
 
-		// throw the output away
-		ob_end_clean();
+		return $config_vars;
+	}
 
-		$context['benchmark_result']['amount'] = $count;
-		$context['benchmark_result']['test_name'] = $txt['benchmark_postread'];
-		deleteMembers($usersID);
+	public static function generatedProxyUrl($url)
+	{
+		global $eip_mode, $eip_url, $image_proxy_enabled, $image_proxy_secret, $boardurl;
+
+		if (empty($eip_mode))
+			$eip_mode = 0;
+
+		if ($eip_mode === 0)
+		{
+			return strtr($boardurl, array('http://' => 'https://')) . '/proxy.php?request=' . urlencode($url) . '&hash=' . md5($url . $image_proxy_secret);
+		}
+		elseif ($eip_mode === 1)
+			return $eip_url . $url;
+	}
+	
+	public static function generatedProxyUrlHook($url, &$url_out)
+	{
+		global $eip_mode;
+		
+		if ($eip_mode !== 0)
+			$url_out = SMFExtImgProxy::generatedProxyUrl($url);
 	}
 }

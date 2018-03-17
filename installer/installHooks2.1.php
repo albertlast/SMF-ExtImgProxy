@@ -48,6 +48,7 @@ if (file_exists(dirname(__FILE__) . '/SSI.php') && !defined('SMF')) {
 
 // Add hooks and plugin the mod
 add_integration_function('integrate_pre_include', '$sourcedir/SMFExtImgProxy/Class-SMFExtImgProxy.php');
-add_integration_function('integrate_manage_maintenance', 'SMFExtImgProxy::addManageMaintenancePanel');
+add_integration_function('integrate_modify_modifications', 'SMFExtImgProxy::addManageMaintenancePanel');
 add_integration_function('integrate_admin_areas', 'SMFExtImgProxy::addAdminPanel');
+add_integration_function('integrate_proxy', 'SMFExtImgProxy::generatedProxyUrlHook');
 ?>
