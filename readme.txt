@@ -1,6 +1,6 @@
 ﻿[url=https://custom.simplemachines.org/mods/index.php?mod=4155][b]SMF-External Image Proxy[/b][/url]
 
-This mod provide SMF 2.1 with the posibility to use external image proxy.
+This mod provide SMF 2.1 beta4/rc1 with the posibility to use extnal image proxy.
 
 [b][i]Proxy mode[/i][/b]
 - Internal mode, which is the smf proxy.php solution
