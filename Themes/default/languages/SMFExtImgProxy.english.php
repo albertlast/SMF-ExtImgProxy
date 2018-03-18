@@ -48,7 +48,7 @@ $txt['eip_internal'] = 'SMF Imageproxy';
 $txt['eip_mode'] = 'Mode';
 $txt['eip_url'] = 'Proxy URL';
 $txt['eip_exp'] = 'Example';
-$txt['eip_mode_help'] = 'You can only change the mode when the image proxy of smf ist enabled. 
+$txt['eip_mode_help'] = 'You can only change the mode when the image proxy of smf ist enabled.<br>
 		Maintenance > Server Settings > General';
 
 ?>

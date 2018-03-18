@@ -100,7 +100,7 @@ class SMFExtImgProxy {
 			'value' => $eip_mode,
 			'label' => $txt['eip_mode'],
 			'javascript' => '',
-			'help' => $txt['eip_mode_help'],
+			'help' => 'eip_mode_help',
 			'disabled' => empty($image_proxy_enabled),
 			'invalid' => false,
 			'preinput' => '',
@@ -177,5 +177,10 @@ class SMFExtImgProxy {
 		
 		if ($eip_mode !== 0)
 			$url_out = SMFExtImgProxy::generatedProxyUrl($url);
+	}
+
+	public static function loadLanguage()
+	{
+		loadLanguage('SMFExtImgProxy');
 	}
 }

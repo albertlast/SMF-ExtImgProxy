@@ -51,4 +51,5 @@ add_integration_function('integrate_pre_include', '$sourcedir/SMFExtImgProxy/Cla
 add_integration_function('integrate_modify_modifications', 'SMFExtImgProxy::addManageMaintenancePanel');
 add_integration_function('integrate_admin_areas', 'SMFExtImgProxy::addAdminPanel');
 add_integration_function('integrate_proxy', 'SMFExtImgProxy::generatedProxyUrlHook');
+add_integration_function('integrate_helpadmin', 'SMFExtImgProxy::loadLanguage');
 ?>

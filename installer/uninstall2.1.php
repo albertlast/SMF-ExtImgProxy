@@ -52,5 +52,6 @@ remove_integration_function('integrate_pre_include', '$sourcedir/SMFExtImgProxy/
 remove_integration_function('integrate_modify_modifications', 'SMFExtImgProxy::addManageMaintenancePanel');
 remove_integration_function('integrate_admin_areas', 'SMFExtImgProxy::addAdminPanel');
 remove_integration_function('integrate_proxy', 'SMFExtImgProxy::generatedProxyUrlHook');
+remove_integration_function('integrate_helpadmin', 'SMFExtImgProxy::loadLanguage');
 
 ?>
