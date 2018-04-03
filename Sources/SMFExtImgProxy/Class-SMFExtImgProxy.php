@@ -1,7 +1,7 @@
 <?php
 
 /**
-* @package manifest file for SMF-Benchmark
+* @package manifest file for SMF-External Image Proxy
 * @version 1.0
 * @author albertlast (http://www.simplemachines.org/community/index.php?action=profile;u=226111)
 * @copyright Copyright (c) 2018
