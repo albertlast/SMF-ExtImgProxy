@@ -48,11 +48,6 @@ class SMFExtImgProxy {
 	public static function addManageMaintenancePanel(&$subActions)
 	{
 		global $context;
-		
-		loadTemplate('SMFExtImgProxy');
-
-		//$context[$context['admin_menu_name']]['tab_data']['tabs']['smf_extimgproxy'] = array();
-
 		$subActions['smf_extimgproxy'] = 'SMFExtImgProxy::MaintainExtimgproxy';
 	}
 
